@@ -14,9 +14,11 @@ askRandom gen = do
    numberstr <- getLine
 
    when (not $ null numberstr) $ do
-    let number = read numberstr
+    let list = reads numberstr
 
-    if number == randNumber 
+    case list of
+        [] -> putStrLn "Invalid input"
+        [(number, _)] -> if  number == randNumber
         then putStrLn "Yeah. That's correct!"
         else putStrLn "Nah that is not right!"
 
