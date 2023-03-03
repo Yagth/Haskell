@@ -1,0 +1,6 @@
+palinrom
+NotPalindrom
+Hello
+COOC
+dad
+mom
