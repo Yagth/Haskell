@@ -1,3 +1,5 @@
+import Control.Monad.Trans.Writer
+
 double :: (Num a) => a -> Maybe a
 double x = Just x >>= (\y -> Just $ y * 2)
 
@@ -53,3 +55,26 @@ in3 (c,r) = moveKnight (c,r) >>= moveKnight >>= moveKnight
 
 canMoveIn3 :: KnightPos -> KnightPos -> Bool
 canMoveIn3 start end = end `elem` in3 start
+  
+
+newtype DiffList a = DiffList { getDiffList :: [a] -> [a] }
+
+toDiffList :: [a] -> DiffList a
+toDiffList xs = DiffList (xs++)
+
+fromDiffList :: DiffList a -> [a]
+fromDiffList (DiffList f) = f []
+
+instance Monoid (DiffList a) where  
+    mempty = DiffList (\xs -> [] ++ xs)  
+    (DiffList f) `mappend` (DiffList g) = DiffList (\xs -> f (g xs))
+
+gcd' :: Int -> Int -> Writer (DiffList String) Int  
+gcd' a b  
+    | b == 0 = do  
+        tell (toDiffList ["Finished with " ++ show a])  
+        return a  
+    | otherwise = do  
+        result <- gcd' b (a `mod` b)  
+        tell (toDiffList [show a ++ " mod " ++ show b ++ " = " ++ show (a `mod` b)])  
+        return result  
