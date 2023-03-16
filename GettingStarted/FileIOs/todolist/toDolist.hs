@@ -1,8 +1,15 @@
 import System.IO
-import System.Directory
-import Data.List
+    ( IOMode(ReadMode),
+      hClose,
+      hGetContents,
+      hPutStr,
+      openFile,
+      openTempFile )
+import System.Directory ( removeFile, renameFile )
+import Data.List ( delete )
 import GHC.Data.ShortText (ShortText(contents))
 
+main :: IO ()
 main = do
     handle <- openFile "todolist.txt" ReadMode
     (tempName, tempHandle) <- openTempFile "." "temp"
