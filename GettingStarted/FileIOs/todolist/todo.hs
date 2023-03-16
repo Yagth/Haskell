@@ -5,16 +5,24 @@ import System.Directory (removeFile, renameFile)
 
 main = do
     (command:args) <- getArgs
-    let (Just action) = lookup command dispatch
+    let result = lookup command dispatch
+        action = case result of
+            Nothing -> help
+            (Just function) -> function
 
     action args
 
 dispatch :: [(String, [String] -> IO ())]
 dispatch = [
-    ("add", add),
-    ("view", view),
-    ("remove", remove),
-    ("bump", bump)
+    ("--add", add),
+    ("--view", view),
+    ("--remove", remove),
+    ("--bump", bump),
+    ("-a", add),
+    ("-v", view),
+    ("-r", remove),
+    ("-b", bump),
+    ("--help", help)
     ]
 
 add :: [String] -> IO ()
@@ -66,3 +74,13 @@ bump [filename, numberString] = do
 
     removeFile filename
     renameFile tempName filename
+ 
+help ::[String] -> IO ()
+help xs = do
+    let helpStr = "Help menu :\n"++
+                  "--add | -a <file name> <Todo list item in double coutes> : To add new Item to the file\n"++
+                  "--view | -v <file name> : To view todolist\n" ++
+                  "--remove | -r <file name> <Todo item number> : To remove a todo list item\n" ++
+                  "--bump | -b <file name> <Todo item number> : To move a todo item to top of the list\n"++
+                  "--help | -h : To see the list of commands\n"
+    putStrLn helpStr
