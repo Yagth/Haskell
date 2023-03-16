@@ -78,9 +78,9 @@ bump [filename, numberString] = do
 help ::[String] -> IO ()
 help xs = do
     let helpStr = "Help menu :\n"++
-                  "--add | -a <file name> <Todo list item in double coutes> : To add new Item to the file\n"++
-                  "--view | -v <file name> : To view todolist\n" ++
-                  "--remove | -r <file name> <Todo item number> : To remove a todo list item\n" ++
-                  "--bump | -b <file name> <Todo item number> : To move a todo item to top of the list\n"++
-                  "--help | -h : To see the list of commands\n"
+                  " | --add    | -a <file name> <Todo list item in double coutes> : To add new Item to the file\n"++
+                  " | --view   | -v <file name> : To view todolist\n" ++
+                  " | --remove | -r <file name> <Todo item number> : To remove a todo list item\n" ++
+                  " | --bump   | -b <file name> <Todo item number> : To move a todo item to top of the list\n"++
+                  " | --help   | -h : To see the list of commands\n"
     putStrLn helpStr
