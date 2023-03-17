@@ -48,17 +48,11 @@ freq hz duration = map (* volume) $ zipWith3 (\x y z -> x*y*z) release attack ou
 
           output = map (sin . (*step)) [0.0 .. sampleRate * duration]
 
+song :: [Semitone]
+song = [0, 2, 4, 5, 4, 0, 2, 4, 7, 9, 7, 4, 5, 4]
 
 wave :: [Pulse]
-wave = concat [ note 0  duration
-              , note 2  duration
-              , note 4  duration
-              , note 5  duration
-              , note 7  duration
-              , note 9  duration
-              , note 11 duration
-              , note 12 duration
-              ]
+wave = concatMap (`note` duration) song
     where duration = 0.5
 
 save :: FilePath -> IO ()
