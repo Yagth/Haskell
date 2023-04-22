@@ -1,8 +1,5 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE NoRebindableSyntax #-}
-#if __GLASGOW_HASKELL__ >= 810
-{-# OPTIONS_GHC -Wno-prepositive-qualified-module #-}
-#endif
 {-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
 {-# OPTIONS_GHC -w #-}
 module Paths_Risk (
@@ -44,7 +41,6 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 
 
-
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 bindir     = "/home/yab/.cabal/bin"
 libdir     = "/home/yab/.cabal/lib/x86_64-linux-ghc-9.2.7/Risk-0.1.0.0-inplace-Risk"
@@ -59,6 +55,7 @@ getDynLibDir  = catchIO (getEnv "Risk_dynlibdir")  (\_ -> return dynlibdir)
 getDataDir    = catchIO (getEnv "Risk_datadir")    (\_ -> return datadir)
 getLibexecDir = catchIO (getEnv "Risk_libexecdir") (\_ -> return libexecdir)
 getSysconfDir = catchIO (getEnv "Risk_sysconfdir") (\_ -> return sysconfdir)
+
 
 
 

@@ -30,6 +30,26 @@
   (major1) == 4 && (major2) <  16 || \
   (major1) == 4 && (major2) == 16 && (minor) <= 4)
 #endif /* MIN_VERSION_base */
+/* package bytestring-0.11.4.0 */
+#ifndef VERSION_bytestring
+#define VERSION_bytestring "0.11.4.0"
+#endif /* VERSION_bytestring */
+#ifndef MIN_VERSION_bytestring
+#define MIN_VERSION_bytestring(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  11 || \
+  (major1) == 0 && (major2) == 11 && (minor) <= 4)
+#endif /* MIN_VERSION_bytestring */
+/* package network-3.1.2.8 */
+#ifndef VERSION_network
+#define VERSION_network "3.1.2.8"
+#endif /* VERSION_network */
+#ifndef MIN_VERSION_network
+#define MIN_VERSION_network(major1,major2,minor) (\
+  (major1) <  3 || \
+  (major1) == 3 && (major2) <  1 || \
+  (major1) == 3 && (major2) == 1 && (minor) <= 2)
+#endif /* MIN_VERSION_network */
 
 /* tool alex-3.2.5 */
 #ifndef TOOL_VERSION_alex
