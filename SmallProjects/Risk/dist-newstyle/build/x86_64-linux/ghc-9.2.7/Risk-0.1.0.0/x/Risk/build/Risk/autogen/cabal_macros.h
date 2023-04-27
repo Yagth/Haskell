@@ -50,6 +50,16 @@
   (major1) == 3 && (major2) <  1 || \
   (major1) == 3 && (major2) == 1 && (minor) <= 2)
 #endif /* MIN_VERSION_network */
+/* package stm-2.5.0.2 */
+#ifndef VERSION_stm
+#define VERSION_stm "2.5.0.2"
+#endif /* VERSION_stm */
+#ifndef MIN_VERSION_stm
+#define MIN_VERSION_stm(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  5 || \
+  (major1) == 2 && (major2) == 5 && (minor) <= 0)
+#endif /* MIN_VERSION_stm */
 
 /* tool alex-3.2.7.1 */
 #ifndef TOOL_VERSION_alex
