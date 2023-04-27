@@ -4,22 +4,37 @@ import Control.Concurrent (forkFinally)
 import Control.Concurrent.STM
 import qualified Control.Exception as E
 import Control.Monad (unless, forever, void)
-import qualified Data.ByteString as S
+-- import qualified Data.ByteString as S
+import qualified Data.ByteString.Char8 as C
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
 import RunGame
+import Risk
 
+data MessageType = Prob Double | GameState Battlefield | Unknown String deriving(Show)
 
 main :: IO ()
-main = do 
+main = do
   putStrLn "Server running on port 3000"
-  runTCPServer Nothing "3000" talk
+  battlefield' <- newTVarIO $ Battlefield {attackers=10, defenders = 10}
+  runTCPServer Nothing "3000" (talk battlefield')
   where
-    talk s = do
+    talk bf s = do
         msg <- recv s 1024
-        unless (S.null msg) $ do
-          sendAll s msg
-          talk s
+        unless (C.unpack msg == "/quit") $ do
+          result <- case C.unpack msg of
+            "/attack"   -> updateTVar bf runBattle
+            "/prob"     -> do
+              currentBF <- readTVarIO bf
+              Prob <$> runProb currentBF
+            "/invade"   -> updateTVar bf runInvade
+            "/pass"     -> updateTVar bf return
+            _           -> return $ Unknown "Unknown Commnad"
+          sendAll s (C.pack (show result))
+          talk bf s
+    updateTVar bfState f = do
+      currentBF <- readTVarIO bfState
+      GameState <$> f currentBF
 
 -- from the "network-run" package.
 runTCPServer :: Maybe HostName -> ServiceName -> (Socket -> IO a) -> IO a
@@ -41,16 +56,10 @@ runTCPServer mhost port server = withSocketsDo $ do
         listen sock 1024
         return sock
     loop sock = do
-      connections <- newTVarIO (0 :: Int)
       forever $ do
-        --Check if connections is less than two and block other wise
-        atomically $ do
-          n <- readTVar connections
-          check (n < 2)
 
         --Accept new connection
         E.bracketOnError (accept sock) (close . fst) $ \(conn, _peer) -> do
-            atomically $ modifyTVar' connections (+1)
 
            --Handle the new connection
             void $
@@ -61,5 +70,4 @@ runTCPServer mhost port server = withSocketsDo $ do
 
               forkFinally (server conn) (const $ do
                 --Decrement the connections when finished
-                atomically $ modifyTVar' connections (subtract 1)
                 gracefulClose conn 5000)

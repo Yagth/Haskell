@@ -4,6 +4,7 @@ module ConnectClient (main) where
 
 import qualified Control.Exception as E
 import qualified Data.ByteString.Char8 as C
+import qualified Data.ByteString as S
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
 
@@ -13,9 +14,13 @@ main = runTCPClient "127.0.0.1" "3000" $ \s -> do
     client <- getLine
     sendAll s $ C.pack client
     msg <- recv s 1024
-    putStr "Received: "
-    C.putStrLn msg
-
+    if S.null msg
+        then do 
+            return ()
+    else do
+        putStr "Received: "
+        C.putStrLn msg
+        main
 -- from the "network-run" package.
 runTCPClient :: HostName -> ServiceName -> (Socket -> IO a) -> IO a
 runTCPClient host port client = withSocketsDo $ do

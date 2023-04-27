@@ -21,3 +21,4 @@ executable Risk
                       MonadRandom
     hs-source-dirs:   app
     default-language: Haskell2010
+    other-modules: Risk RunGame
