@@ -81,7 +81,7 @@ allowedAttack available | available < 3 =  available| available == 3 = 2 | other
 allowedDefend :: Army -> Int
 allowedDefend available | available <=2 =  available | otherwise = 3
 
-battlefield = Battlefield {attackers=10, defenders = 5}
+-- battlefield = Battlefield {attackers=10, defenders = 10}
 -- dfsArmy  = defenders battlefield
 -- dfs      = replicate (allowed dfsArmy)  die
 -- temp = fmap unDV <$> sequence dfs

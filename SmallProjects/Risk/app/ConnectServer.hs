@@ -7,10 +7,13 @@ import Control.Monad (unless, forever, void)
 import qualified Data.ByteString as S
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
+import RunGame
 
 
 main :: IO ()
-main = runTCPServer Nothing "3000" talk
+main = do 
+  putStrLn "Server running on port 3000"
+  runTCPServer Nothing "3000" talk
   where
     talk s = do
         msg <- recv s 1024
