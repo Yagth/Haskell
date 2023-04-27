@@ -9,7 +9,9 @@ import Network.Socket.ByteString (recv, sendAll)
 
 main :: IO ()
 main = runTCPClient "127.0.0.1" "3000" $ \s -> do
-    sendAll s "Hello, world!"
+    putStr "msg:"
+    client <- getLine
+    sendAll s $ C.pack client
     msg <- recv s 1024
     putStr "Received: "
     C.putStrLn msg

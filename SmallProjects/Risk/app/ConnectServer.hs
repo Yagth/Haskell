@@ -1,11 +1,14 @@
 module ConnectServer where
 
 import Control.Concurrent (forkFinally)
+import Control.Concurrent.STM
 import qualified Control.Exception as E
 import Control.Monad (unless, forever, void)
 import qualified Data.ByteString as S
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
+import Control.Concurrent.STM (newTVarIO, modifyTVar')
+
 
 main :: IO ()
 main = runTCPServer Nothing "3000" talk
@@ -22,6 +25,7 @@ runTCPServer mhost port server = withSocketsDo $ do
     addr <- resolve
     E.bracket (open addr) close loop
   where
+    -- This function is used to create a connection given the parameters needed to do so.
     resolve = do
         let hints = defaultHints {
                 addrFlags = [AI_PASSIVE]
@@ -34,10 +38,27 @@ runTCPServer mhost port server = withSocketsDo $ do
         bind sock $ addrAddress addr
         listen sock 1024
         return sock
-    loop sock = forever $ E.bracketOnError (accept sock) (close . fst)
-        $ \(conn, _peer) -> void $
+    loop sock = do
+      connections <- newTVarIO 0
+      forever $ do
+        --Check if connections is less than two and block other wise
+        atomically $ do 
+          n <- readTvar connections
+          check (n < 2)
+
+        --Accept new connection
+        E.bracketOnError (accept sock) (close . fst)
+        $ \(conn, _peer) -> do
+          atomically $ modifyTVar' connections (+1)
+           
+           --Handle the new connection
+           void $
             -- 'forkFinally' alone is unlikely to fail thus leaking @conn@,
             -- but 'E.bracketOnError' above will be necessary if some
             -- non-atomic setups (e.g. spawning a subprocess to handle
             -- @conn@) before proper cleanup of @conn@ is your case
-            forkFinally (server conn) (const $ gracefulClose conn 5000)
+
+            forkFinally (server conn) (const $ do
+              --Decrement the connections when finished
+               modifyTVar' connections (subtract 1)
+               gracefulClose conn 5000)

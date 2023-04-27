@@ -17,6 +17,7 @@ executable Risk
     build-depends:    base ^>=4.16.4.0,
                       network,
                       bytestring,
+                      stm,
                       MonadRandom
     hs-source-dirs:   app
     default-language: Haskell2010
