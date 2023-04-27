@@ -2,9 +2,9 @@ module ConnectServer where
 
 import Control.Concurrent (forkFinally)
 import Control.Concurrent.STM
+import Control.Concurrent.STM.TVar
 import qualified Control.Exception as E
-import Control.Monad (unless, forever, void)
--- import qualified Data.ByteString as S
+import Control.Monad (unless, forever, void, join)
 import qualified Data.ByteString.Char8 as C
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
@@ -27,14 +27,16 @@ main = do
             "/prob"     -> do
               currentBF <- readTVarIO bf
               Prob <$> runProb currentBF
-            "/invade"   -> updateTVar bf runInvade
-            "/pass"     -> updateTVar bf return
+            "/invade"   -> atomically $ updateTVar bf runInvade
+            "/pass"     -> atomically $ updateTVar bf return
+            "/stat"     -> GameState <$> readTVarIO bf
             _           -> return $ Unknown "Unknown Commnad"
           sendAll s (C.pack (show result))
           talk bf s
     updateTVar bfState f = do
-      currentBF <- readTVarIO bfState
-      GameState <$> f currentBF
+      join $ atomically $ do
+         currentBF <- readTVar bfState
+         GameState <$> f currentBF
 
 -- from the "network-run" package.
 runTCPServer :: Maybe HostName -> ServiceName -> (Socket -> IO a) -> IO a
@@ -42,7 +44,8 @@ runTCPServer mhost port server = withSocketsDo $ do
     addr <- resolve
     E.bracket (open addr) close loop
   where
-    -- This function is used to create a connection given the parameters needed to do so.
+    -- This function is used to create a connection given the 
+    --parameters needed to do so.
     resolve = do
         let hints = defaultHints {
                 addrFlags = [AI_PASSIVE]
@@ -63,11 +66,5 @@ runTCPServer mhost port server = withSocketsDo $ do
 
            --Handle the new connection
             void $
-              -- 'forkFinally' alone is unlikely to fail thus leaking @conn@,
-              -- but 'E.bracketOnError' above will be necessary if some
-              -- non-atomic setups (e.g. spawning a subprocess to handle
-              -- @conn@) before proper cleanup of @conn@ is your case
-
               forkFinally (server conn) (const $ do
-                --Decrement the connections when finished
                 gracefulClose conn 5000)
