@@ -7,7 +7,6 @@ import Control.Monad (unless, forever, void)
 import qualified Data.ByteString as S
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
-import Control.Concurrent.STM (newTVarIO, modifyTVar')
 
 
 main :: IO ()
@@ -39,26 +38,25 @@ runTCPServer mhost port server = withSocketsDo $ do
         listen sock 1024
         return sock
     loop sock = do
-      connections <- newTVarIO 0
+      connections <- newTVarIO (0 :: Int)
       forever $ do
         --Check if connections is less than two and block other wise
-        atomically $ do 
-          n <- readTvar connections
+        atomically $ do
+          n <- readTVar connections
           check (n < 2)
 
         --Accept new connection
-        E.bracketOnError (accept sock) (close . fst)
-        $ \(conn, _peer) -> do
-          atomically $ modifyTVar' connections (+1)
-           
-           --Handle the new connection
-           void $
-            -- 'forkFinally' alone is unlikely to fail thus leaking @conn@,
-            -- but 'E.bracketOnError' above will be necessary if some
-            -- non-atomic setups (e.g. spawning a subprocess to handle
-            -- @conn@) before proper cleanup of @conn@ is your case
+        E.bracketOnError (accept sock) (close . fst) $ \(conn, _peer) -> do
+            atomically $ modifyTVar' connections (+1)
 
-            forkFinally (server conn) (const $ do
-              --Decrement the connections when finished
-               modifyTVar' connections (subtract 1)
-               gracefulClose conn 5000)
+           --Handle the new connection
+            void $
+              -- 'forkFinally' alone is unlikely to fail thus leaking @conn@,
+              -- but 'E.bracketOnError' above will be necessary if some
+              -- non-atomic setups (e.g. spawning a subprocess to handle
+              -- @conn@) before proper cleanup of @conn@ is your case
+
+              forkFinally (server conn) (const $ do
+                --Decrement the connections when finished
+                atomically $ modifyTVar' connections (subtract 1)
+                gracefulClose conn 5000)
