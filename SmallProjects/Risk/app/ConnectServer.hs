@@ -4,12 +4,13 @@ import Control.Concurrent (forkFinally)
 import Control.Concurrent.STM
 import Control.Concurrent.STM.TVar
 import qualified Control.Exception as E
-import Control.Monad (unless, forever, void, join)
+import Control.Monad (unless, forever, void, join, Functor (fmap))
 import qualified Data.ByteString.Char8 as C
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
 import RunGame
 import Risk
+import Control.Concurrent.STM (newTVar)
 
 data MessageType = Prob Double | GameState Battlefield | Unknown String deriving(Show)
 
@@ -23,20 +24,19 @@ talk bf s = do
         msg <- recv s 1024
         unless (C.unpack msg == "/quit") $ do
           result <- case C.unpack msg of
-            "/attack"   -> updateTVar bf runBattle
+            "/attack"   -> GameState <$> updateTVar bf runBattle
             "/prob"     -> do
               currentBF <- readTVarIO bf
               Prob <$> runProb currentBF
-            "/invade"   -> atomically $ updateTVar bf runInvade
-            "/pass"     -> atomically $ updateTVar bf return
+            "/invade"   -> GameState <$> updateTVar bf runInvade
+            "/pass"     -> GameState <$> updateTVar bf return 
             "/stat"     -> GameState <$> readTVarIO bf
             _           -> return $ Unknown "Unknown Commnad"
           sendAll s (C.pack (show result))
           talk bf s
-          
+
 updateTVar bfState f = do
-      join $ atomically $ do
-         currentBF <- readTVar bfState
+         currentBF <- readTVarIO bfState
          GameState <$> f currentBF
 
 -- from the "network-run" package.
