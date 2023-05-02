@@ -18,8 +18,8 @@ main = do
   putStrLn "Server running on port 3000"
   battlefield' <- newTVarIO $ Battlefield {attackers=10, defenders = 10}
   runTCPServer Nothing "3000" (talk battlefield')
-  where
-    talk bf s = do
+
+talk bf s = do
         msg <- recv s 1024
         unless (C.unpack msg == "/quit") $ do
           result <- case C.unpack msg of
@@ -33,7 +33,8 @@ main = do
             _           -> return $ Unknown "Unknown Commnad"
           sendAll s (C.pack (show result))
           talk bf s
-    updateTVar bfState f = do
+          
+updateTVar bfState f = do
       join $ atomically $ do
          currentBF <- readTVar bfState
          GameState <$> f currentBF
