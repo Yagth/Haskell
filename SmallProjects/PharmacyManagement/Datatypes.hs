@@ -1,18 +1,20 @@
 module Datatypes where
 
 
-type Name   = String
-type Salary = Float
-type EndDate   = String
+type Name     = String
+type Username = String
+type Password = String
+type Salary   = Float
+type EndDate  = String
 
 data Pharmacy = CreatePharm {getUsers :: [User], getMeds :: [Med]}
 
 data User     = CreateUser  {
         getFirstName :: Name,
-        getLastName :: Name,
-        getUserName:: Name, 
-        getSalary :: Salary, 
-        getStatus :: Status
+        getLastName  :: Name,
+        getUserName  :: Username, 
+        getSalary    :: Salary, 
+        getStatus    :: Status
     }
 
 data Med      = CreateMed   {getName :: Name, getAmount :: Int, getPrice :: Float}

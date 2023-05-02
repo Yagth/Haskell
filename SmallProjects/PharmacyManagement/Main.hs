@@ -1,2 +1,4 @@
+import Pages
+
 main :: IO ()
-main = undefined
+main = loginPage
