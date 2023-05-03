@@ -1,25 +1,27 @@
 module Datatypes where
 
 
-type Name     = String
-type Username = String
-type Password = String
-type Salary   = Float
-type EndDate  = String
+type Name      = String
+type Username  = String
+type Password  = String
+type Salary    = Float
 
-data Pharmacy = CreatePharm {getUsers :: [User], getMeds :: [Med]}
+data Pharmacy  = CreatePharm {getUsers :: [User], getMeds :: [Med]}
 
-data User     = CreateUser  {
-        getFirstName :: Name,
-        getLastName  :: Name,
-        getUserName  :: Username, 
-        getSalary    :: Salary, 
-        getStatus    :: Status
-    }
+data User      = CreateUser  {
+        firstName  :: Name,
+        lastName   :: Name,
+        userName   :: Username, 
+        previlage  :: Previlage,
+        salary     :: Salary, 
+        status     :: Status
+    } deriving (Show, Eq)
 
-data Med      = CreateMed   {getName :: Name, getAmount :: Int, getPrice :: Float}
+data Med       = CreateMed   {getName :: Name, getAmount :: Int, getPrice :: Float} deriving (Show, Eq)
 
-data Status   = Onshift | OffShift | OnVacation EndDate
+data Status    = Onshift | OffShift | OnVacation | NotEmployed deriving (Show, Eq)
+
+data Previlage = Admin   | Normal deriving (Show, Eq)
 
 
 -- Pharmacy will have, login page, admin page, user page.

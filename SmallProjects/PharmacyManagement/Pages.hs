@@ -1,27 +1,10 @@
 module Pages where
 
-import Control.Applicative ( Alternative(many) )
-import Datatypes ( User, Password, Username )
+import Control.Applicative
+import Datatypes
+import Parser
 
-newtype Parser a = Parser {runParser :: String -> Maybe (String, a)}
-
-instance Functor Parser where
-    fmap :: (a -> b) -> Parser a -> Parser b
-    fmap f (Parser p1) = Parser (\input -> do
-            (rest, output) <- p1 input
-            Just (rest, f output)
-        )
-
-instance Applicative Parser where
-    pure :: a -> Parser a
-    pure = undefined
-    
-    (<*>) :: Parser (a -> b) -> Parser a -> Parser b
-    (<*>) (Parser p1) (Parser p2) = Parser (\ input -> do
-        (rest, f) <- p1 input
-        (rest', output) <- p2 rest
-        Just (rest', f output)
-        )
+type Line = String
 
 loginPage :: IO ()
 loginPage = do
@@ -38,5 +21,15 @@ adminPage = undefined
 userPage :: IO ()
 userPage = undefined
 
-findUserInFile :: Username -> Password -> IO (Maybe User)
-findUserInFile uname pass = undefined
+-- findUserInFile :: Username -> IO (Maybe User)
+-- findUserInFile uname pass = undefined
+
+loginUser :: Username -> Password -> Line -> Maybe User
+loginUser uname pass line = 
+    if pass /= pass2 || userName user /= uname
+        then Nothing
+        else do
+            Just user
+    where Just (_ , pass2) = runParser parsePassword line <|> Just ("","")
+          Just (_ ,  user) = runParser parseUser line     <|> Just ("", nullUser)
+          nullUser = CreateUser "" "" "" Normal 0.0 NotEmployed
