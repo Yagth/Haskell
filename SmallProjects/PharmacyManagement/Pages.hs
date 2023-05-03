@@ -17,9 +17,10 @@ instance Applicative Parser where
     pure = undefined
     
     (<*>) :: Parser (a -> b) -> Parser a -> Parser b
-    (<*>) (Parser f) (Parser p1) = Parser (\ input -> do
-        (rest, output) <- f input
-        (rest', output') <- p1 output
+    (<*>) (Parser p1) (Parser p2) = Parser (\ input -> do
+        (rest, f) <- p1 input
+        (rest', output) <- p2 rest
+        Just (rest', f output)
         )
 
 loginPage :: IO ()
