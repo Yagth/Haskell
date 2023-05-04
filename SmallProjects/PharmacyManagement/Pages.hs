@@ -9,20 +9,25 @@ type Line = String
 loginPage :: IO ()
 loginPage = do
     putStrLn "****Pharma Login*****\n"
+
     putStr   "Username: "
     username <- getLine
     putStr   "Password: "
     password <- getLine
-    putStrLn $ username ++ password
+
+    inputLines <- readFile "users.txt"
+    let users = map (loginUser username password) (words inputLines)
+        user  = dropWhile (== Nothing) users
+    case user of
+        []     -> putStrLn "Incorrect Credentials"
+        (x:xs) -> putStrLn $ "Login Successfull\n" ++ show x
+
 
 adminPage :: IO ()
 adminPage = undefined
 
 userPage :: IO ()
 userPage = undefined
-
--- findUserInFile :: Username -> IO (Maybe User)
--- findUserInFile uname pass = undefined
 
 loginUser :: Username -> Password -> Line -> Maybe User
 loginUser uname pass line = 

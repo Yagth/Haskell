@@ -51,8 +51,11 @@ parseFields = sepBy (charP ',') parseWord
 parseUser :: Parser User
 parseUser = Parser $ \input -> do
     (rest, output) <- runParser parseFields input
-    Just (rest, createUser output)
-    where createUser [un, _ , fn, ln, plg, sl, st] = CreateUser{
+    user <- createUser output
+    Just (rest, user)
+    
+    where 
+    createUser [un, _ , fn, ln, plg, sl, st] = Just CreateUser{
         firstName = fn,
         lastName  = ln,
         userName  = un,
@@ -60,15 +63,17 @@ parseUser = Parser $ \input -> do
         salary    = read sl,
         status    = parseStatus st
         }
-          parseStatus strStat 
-            | strStat == "Onshift"    = Onshift 
-            | strStat == "OffShift"   = OffShift
-            | strStat == "OnVacation" = OnVacation
-            | otherwise               = NotEmployed
+    createUser xs                            = Nothing
+    -- createUser xs                            = CreateUser "" "" "" Normal 0.0 NotEmployed
+    parseStatus strStat
+        | strStat == "Onshift"    = Onshift 
+        | strStat == "OffShift"   = OffShift
+        | strStat == "OnVacation" = OnVacation
+        | otherwise               = NotEmployed
 
-          parsePrevilage strPrev 
-            | strPrev == "Admin" = Admin 
-            | otherwise = Normal
+    parsePrevilage strPrev 
+        | strPrev == "Admin" = Admin 
+        | otherwise = Normal
 
 parsePassword :: Parser Password
 parsePassword = getPassword <$> parseFields

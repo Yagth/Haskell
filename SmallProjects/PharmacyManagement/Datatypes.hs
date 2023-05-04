@@ -1,4 +1,5 @@
 module Datatypes where
+import Data.List (intercalate)
 
 
 type Name      = String
@@ -15,7 +16,11 @@ data User      = CreateUser  {
         previlage  :: Previlage,
         salary     :: Salary, 
         status     :: Status
-    } deriving (Show, Eq)
+    } deriving Eq
+
+instance Show User where
+    show :: User -> String
+    show user = intercalate "," [firstName user, lastName user, (show . previlage) user, (show . salary) user, (show . status) user]
 
 data Med       = CreateMed   {getName :: Name, getAmount :: Int, getPrice :: Float} deriving (Show, Eq)
 
