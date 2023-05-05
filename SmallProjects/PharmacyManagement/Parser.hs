@@ -42,11 +42,11 @@ charP x = Parser f
 parseWord :: Parser String
 parseWord = Parser $  
     \input ->
-    let (token, rest) = span (/= ',') input
+    let (token, rest) = span (/= ' ') input
     in Just (rest, token)
 
 parseFields :: Parser [String]
-parseFields = sepBy (charP ',') parseWord
+parseFields = sepBy (charP ' ') parseWord
 
 parseUser :: Parser User
 parseUser = Parser $ \input -> do

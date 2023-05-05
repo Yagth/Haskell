@@ -20,13 +20,13 @@ data User      = CreateUser  {
 
 instance Show User where
     show :: User -> String
-    show user = intercalate "," [firstName user, lastName user, (show . previlage) user, (show . salary) user, (show . status) user]
+    show user = intercalate "\t" [ f user |  f<- [firstName, lastName, show . previlage, show . salary, show . status]]
 
 data Med      = CreateMed   {name :: Name, amount :: Int, price :: Float} deriving (Eq)
 
 instance Show Med where
     show :: Med -> String
-    show med = intercalate "," [name med, (show . amount) med, (show . price) med]
+    show med = intercalate "\t" [f med | f <- [name, show . amount, show . price]]
 
 data Status    = Onshift | OffShift | OnVacation | NotEmployed deriving (Show, Eq)
 

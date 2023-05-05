@@ -17,7 +17,7 @@ loginPage = do
     putStr   "Password: "
     password <- getLine
 
-    inputLines <- readFile "users.txt"
+    inputLines <- readFile userFile
     let users = map (loginUser username password) (words inputLines)
         user  = dropWhile (== Nothing) users
     case user of
@@ -37,23 +37,36 @@ logout = do
     systemPause
     loginPage
 
+adminFuncs :: [(String, IO ())]
+adminFuncs = [
+    ("3", displayMeds),
+    ("4", displayUsers),
+    ("5", logout)
+    ]
+
 adminPage :: Maybe User -> IO ()
-adminPage (Just user) = do
+adminPage user'@(Just user) = do
     clearScreen
     putStrLn $ "Welcome: Admin - " ++ userName user ++ "\n"
     displayMenu (commonOptions ++ adminOptions)
 
     putStr "\nChoice: "
     option <- getLine
-
+    let result = lookup option adminFuncs
+        action = case result of
+            Just action -> action
+            Nothing     -> wrongChoice adminPage user'
+    
+    action
+    adminPage user'
+    
     return ()
 adminPage Nothing     = do
     putStrLn "Unauthorized"
     systemPause
     loginPage
 
-
-userPage :: User -> IO ()
+userPage :: Maybe User -> IO ()
 userPage = undefined
 
 loginUser :: Username -> Password -> Line -> Maybe User
