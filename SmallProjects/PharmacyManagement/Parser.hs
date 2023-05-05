@@ -64,7 +64,6 @@ parseUser = Parser $ \input -> do
         status    = parseStatus st
         }
     createUser xs                            = Nothing
-    -- createUser xs                            = CreateUser "" "" "" Normal 0.0 NotEmployed
     parseStatus strStat
         | strStat == "Onshift"    = Onshift 
         | strStat == "OffShift"   = OffShift
@@ -74,6 +73,15 @@ parseUser = Parser $ \input -> do
     parsePrevilage strPrev 
         | strPrev == "Admin" = Admin 
         | otherwise = Normal
+
+parseMed :: Parser Med
+parseMed = Parser $ \input -> do
+    (rest, output) <- runParser parseFields input
+    med            <- createMed output
+    return (rest, med)
+    where createMed [name , amount , price] = Just $ CreateMed name (read amount) (read price)
+          createMed xs                      = Nothing
+          
 
 parsePassword :: Parser Password
 parsePassword = getPassword <$> parseFields

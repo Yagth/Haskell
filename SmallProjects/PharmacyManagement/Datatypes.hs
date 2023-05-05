@@ -7,7 +7,7 @@ type Username  = String
 type Password  = String
 type Salary    = Float
 
-data Pharmacy  = CreatePharm {getUsers :: [User], getMeds :: [Med]}
+data Pharmacy  = CreatePharm {users :: [User], meds :: [Med]}
 
 data User      = CreateUser  {
         firstName  :: Name,
@@ -22,7 +22,11 @@ instance Show User where
     show :: User -> String
     show user = intercalate "," [firstName user, lastName user, (show . previlage) user, (show . salary) user, (show . status) user]
 
-data Med       = CreateMed   {getName :: Name, getAmount :: Int, getPrice :: Float} deriving (Show, Eq)
+data Med      = CreateMed   {name :: Name, amount :: Int, price :: Float} deriving (Eq)
+
+instance Show Med where
+    show :: Med -> String
+    show med = intercalate "," [name med, (show . amount) med, (show . price) med]
 
 data Status    = Onshift | OffShift | OnVacation | NotEmployed deriving (Show, Eq)
 
