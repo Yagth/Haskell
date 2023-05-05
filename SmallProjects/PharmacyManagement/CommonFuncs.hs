@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use first" #-}
 module CommonFuncs where
 
 import Datatypes
@@ -6,6 +8,7 @@ import Parser
 import System.IO
 import Control.Monad (when, unless)
 import GHC.IO.Device (IODevice(close))
+import System.Directory (renameFile)
 
 userFile :: FilePath
 userFile = "DB/Users.txt"
@@ -42,7 +45,25 @@ findMeds medName = do
 
 editMed  :: Name -> Med -> IO (Maybe Med)
 editMed medName newMed = do
+    (Just meds) <- getMeds medFile
+    let (updatedMeds, updated) = replaceMed meds
     
 
+    if updated
+        then do
+            writeFile (medFile ++ ".tmp") (unlines . map showMed $ updatedMeds)
+            renameFile (medFile ++ ".tmp") medFile
+            return (Just newMed)
+        else return Nothing
 
-    
+    where replaceMed [] = ([], False)
+          replaceMed (x:xs) = if name x == medName 
+            then (newMed:xs, True) 
+            else let (newS, bool) = replaceMed xs 
+                 in (x:newS, bool)
+
+showMed :: Med -> String
+showMed med = unwords [f med | f <- [name, show . amount, show . price]]
+
+fmapT :: (a -> a) -> (a, b) -> (a, b)
+fmapT f (x,y) = (f x, y)
