@@ -5,6 +5,8 @@ import Datatypes
 import Parser
 import Menu
 import CommonIOFuncs
+import CommonFuncs
+
 type Line = String
 
 loginPage :: IO ()

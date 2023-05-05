@@ -4,14 +4,9 @@ import Datatypes
 import Distribution.Compat.CharParsing (option)
 import Parser (parseMed, runParser, parseUser)
 import CommonIOFuncs
+import CommonFuncs
 
 type Options = [String]
-
-userFile :: FilePath
-userFile = "DB/Users.txt"
-
-medFile :: FilePath
-medFile = "DB/Meds.txt"
 
 
 adminOptions :: Options
@@ -31,18 +26,6 @@ commonOptions = ["Sell Meds", "Add meds"]
 
 numberOptions :: Options -> Options
 numberOptions = zipWith (\y x-> show y ++ ". " ++ x) [1..]
-
-getMeds :: FilePath -> IO (Maybe [Med])
-getMeds filePath = do
-    strMeds <- readFile filePath
-    let meds = sequence . filter (/= Nothing) $ fmap snd <$> map (runParser parseMed) (lines strMeds)
-    return meds
-
-getUsers :: FilePath -> IO (Maybe [User])
-getUsers filePath = do
-    strUsers <- readFile filePath
-    let users = sequence . filter (/= Nothing) $ fmap snd <$> map (runParser parseUser) (lines strUsers)
-    return users
 
 displayMenu :: Options -> IO ()
 displayMenu options = do
@@ -70,6 +53,6 @@ displayUsers = do
 
 wrongChoice :: (Maybe User -> IO ()) -> Maybe User -> IO ()
 wrongChoice callBack user = do
-    putStrLn "\nWrong Choice"
+    putStrLn "\nNo Such Choice"
     systemPause
     callBack user
