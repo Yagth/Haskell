@@ -56,3 +56,14 @@ wrongChoice callBack user = do
     putStrLn "\nNo Such Choice"
     systemPause
     callBack user
+
+sellMedForm :: IO ()
+sellMedForm = do
+    clearScreen
+    putStrLn "****Sell Meds****\n"
+    putStr   "MedName: "
+    medName <- getLine
+    putStr   "Amount: "
+    amount  <- getLine
+
+    putStrLn ""

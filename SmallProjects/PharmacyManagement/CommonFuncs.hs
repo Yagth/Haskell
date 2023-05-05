@@ -7,7 +7,6 @@ import Data.List
 import Parser
 import System.IO
 import Control.Monad (when, unless)
-import GHC.IO.Device (IODevice(close))
 import System.Directory (renameFile)
 
 userFile :: FilePath
@@ -43,11 +42,14 @@ findMeds medName = do
 
     return foundMed
 
+appendMed :: Med -> IO (Maybe Med)
+appendMed = do
+    
+
 editMed  :: Name -> Med -> IO (Maybe Med)
 editMed medName newMed = do
     (Just meds) <- getMeds medFile
     let (updatedMeds, updated) = replaceMed meds
-    
 
     if updated
         then do
@@ -62,8 +64,29 @@ editMed medName newMed = do
             else let (newS, bool) = replaceMed xs 
                  in (x:newS, bool)
 
+sellMed :: Name -> Int -> IO (Maybe Med)
+sellMed medName amount' = do
+    med <- findMeds medName
+    let result = case med of
+                  Just med'  ->Just $ CreateMed (name med') (amount med' - amount') (price med')
+                  _          -> Nothing
+    case result of
+     Just updatedMed -> editMed medName updatedMed
+     _               -> return Nothing
+
+addMed :: [String] ->  IO (Maybe Med)
+addMed inputs = do
+    let result = runParser parseMed (unwords inputs)
+
+        med    = case result of 
+         Just (_, med) -> Just med
+         _             -> Nothing
+
+    return med
+
 showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]
+
 
 fmapT :: (a -> a) -> (a, b) -> (a, b)
 fmapT f (x,y) = (f x, y)
