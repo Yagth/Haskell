@@ -5,6 +5,7 @@ import Data.List
 import Parser
 import System.IO
 import Control.Monad (when, unless)
+import GHC.IO.Device (IODevice(close))
 
 userFile :: FilePath
 userFile = "DB/Users.txt"
@@ -41,23 +42,7 @@ findMeds medName = do
 
 editMed  :: Name -> Med -> IO (Maybe Med)
 editMed medName newMed = do
-    handle <- openFile medFile ReadWriteMode
+    
 
-    let loop :: IO (Maybe Med)
-        loop = do
-            eof <- hIsEOF handle
-            if eof
-                then return Nothing
-                else do
-                    line <- hGetLine handle
-                    let med = find (== medName ) (words line)
-                        newLine = case med of
-                         Just name -> show newMed
-                         _         -> line
-                        found = newLine /= line
-                    if found
-                        then return (Just newMed)
-                        else loop  
-    loop
 
     
