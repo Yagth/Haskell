@@ -18,7 +18,8 @@ loginPage = do
     password <- getLine
 
     inputLines <- readFile userFile
-    let users = map (loginUser username password) (words inputLines)
+
+    let users = map (loginUser username password) (lines inputLines)
         user  = dropWhile (== Nothing) users
     case user of
         []     -> do 
