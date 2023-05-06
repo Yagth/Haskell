@@ -42,6 +42,8 @@ logout = do
 
 adminFuncs :: [(String, IO ())]
 adminFuncs = [
+    ("1", sellMedForm),
+    ("2", addMedForm),
     ("3", displayMeds),
     ("4", displayUsers),
     ("5", logout)

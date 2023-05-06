@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+    {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use first" #-}
 module CommonFuncs where
 
@@ -42,9 +42,22 @@ findMeds medName = do
 
     return foundMed
 
-appendMed :: Med -> IO (Maybe Med)
-appendMed = do
-    
+appendMedToFile :: Med -> IO (Maybe Med)
+appendMedToFile med = do
+    appendFile medFile (showMed med)
+    return (Just med)
+
+removeMed :: Med -> IO (Maybe Med)
+removeMed med = do
+    (Just meds) <- getMeds medFile
+    let newMeds = delete med meds
+        deleted = meds /= newMeds
+    if deleted
+        then do
+            writeFile (medFile ++ ".tmp") (unlines . map showMed $ newMeds)
+            renameFile (medFile ++ ".tmp") medFile
+            return (Just med)
+        else return Nothing
 
 editMed  :: Name -> Med -> IO (Maybe Med)
 editMed medName newMed = do
@@ -78,11 +91,10 @@ addMed :: [String] ->  IO (Maybe Med)
 addMed inputs = do
     let result = runParser parseMed (unwords inputs)
 
-        med    = case result of 
-         Just (_, med) -> Just med
-         _             -> Nothing
-
-    return med
+    case result of 
+         Just (_, med) -> do
+            appendMedToFile med
+         _             -> return Nothing
 
 showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]

@@ -31,12 +31,16 @@ displayMenu :: Options -> IO ()
 displayMenu options = do
     mapM_ putStrLn (numberOptions options)
 
+medHeader :: IO ()
+medHeader = putStrLn "No. Name\tAmount\tPrice\n"
+
+
 displayMeds :: IO ()
 displayMeds = do
     clearScreen
     Just meds <- getMeds medFile
     putStrLn "****List Of all Meds****\n"
-    putStrLn "No. Name\tAmount\tPrice\n"
+    medHeader
     mapM_ putStrLn (numberOptions . map (\line -> " " ++ show line) $ meds)
     putStrLn ""
     systemPause
@@ -46,24 +50,60 @@ displayUsers = do
     clearScreen
     Just users <- getUsers userFile
     putStrLn "****List of all Users****\n"
-    putStrLn "No. F-name\tL-name\tPrev\tSalary\tStatus\n"
     mapM_ putStrLn (numberOptions . map show $ users)
     putStrLn ""
     systemPause
+
+addMedForm :: IO ()
+addMedForm = do
+    clearScreen
+    putStrLn "****Add new Medicine****\n"
+    putStr "Med Name: "
+    medName <- getLine
+    putStr "Amount: "
+    medAmount <- getLine
+    putStr "Price: "
+    medPrice <- getLine
+    newMed <- addMed [medName, medAmount, medPrice]
+
+    case newMed of
+        Just med -> do
+            putStrLn "\nNew med with the following info created!!\n"
+            medHeader
+            putStrLn ("1. " ++ show med)
+        Nothing    -> do
+            putStrLn "Couldn't create Med due to some error\n"
+
+    systemPause
+    displayMeds
+
+sellMedForm :: IO ()
+sellMedForm = do
+    clearScreen
+    putStrLn "****Sell Medicine****\n"
+    putStr   "Med Name: "
+    medName <- getLine
+    putStr   "amount: "
+    medAmount  <- getLine
+    med <- sellMed medName (read medAmount)            
+    case med of
+        Just med' -> do
+            putStrLn ""
+            putStrLn "****Updated information****\n"
+            putStrLn $ "Sold med " ++name med' ++ " with amount: " ++ medAmount ++ "\n"
+            medHeader
+            print med'
+        Nothing  -> do
+            putStrLn "Couldn't perform med update due to some error\n"
+            putStr "Retry?N/:  "
+            choice <- getLine
+            if choice == "Y"
+                then sellMedForm
+                else displayMeds
+    
 
 wrongChoice :: (Maybe User -> IO ()) -> Maybe User -> IO ()
 wrongChoice callBack user = do
     putStrLn "\nNo Such Choice"
     systemPause
     callBack user
-
-sellMedForm :: IO ()
-sellMedForm = do
-    clearScreen
-    putStrLn "****Sell Meds****\n"
-    putStr   "MedName: "
-    medName <- getLine
-    putStr   "Amount: "
-    amount  <- getLine
-
-    putStrLn ""
