@@ -102,3 +102,9 @@ showMed med = unwords [f med | f <- [name, show . amount, show . price]]
 
 fmapT :: (a -> a) -> (a, b) -> (a, b)
 fmapT f (x,y) = (f x, y)
+
+readMaybe ::(Read a) => String -> Maybe a
+readMaybe input = let xs = reads input 
+    in case xs of
+        [] -> Nothing
+        [(value, rest)] -> Just value

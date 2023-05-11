@@ -45,8 +45,19 @@ displayMeds = do
     putStrLn ""
     putStr "Choice: "
     choice <- getLine
-    case choice of
-        ""
+    case readMaybe choice of
+        Nothing -> return ()
+        Just medNo -> do
+            putStrLn ""
+            medHeader
+            putStr $ show medNo ++ ".  "
+            print $ meds !! (medNo - 1)
+            putStrLn ""
+            
+            systemPause
+
+            return ()
+
 
 
 displayUsers :: IO ()

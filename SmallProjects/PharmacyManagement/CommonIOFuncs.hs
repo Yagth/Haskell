@@ -7,6 +7,6 @@ clearScreen = callCommand "clear"
 
 systemPause :: IO ()
 systemPause = do 
-    putStrLn "Press any Enter key to continue..."
+    putStrLn "Press Enter key to continue..."
     _ <- getLine
     return ()
