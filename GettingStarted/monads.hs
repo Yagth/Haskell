@@ -55,6 +55,17 @@ in3 (c,r) = moveKnight (c,r) >>= moveKnight >>= moveKnight
 canMoveIn3 :: KnightPos -> KnightPos -> Bool
 canMoveIn3 start end = end `elem` in3 start
   
+theThreeMoves :: KnightPos -> KnightPos -> [KnightPos]
+theThreeMoves start end 
+    | canMoveIn3 start end =  do
+        let first  = moveKnight start
+            second = first >>= moveKnight
+            sec   = filter (\x -> end `elem` moveKnight x ) second
+            fir   = filter (`elem` first) sec
+        fir
+        -- first'  <- filter (second' == ) (moveKnight first)
+        -- [start, first', second', end]
+    | otherwise = []
 
 newtype DiffList a = DiffList { getDiffList :: [a] -> [a] }
 
