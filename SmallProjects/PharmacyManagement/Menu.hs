@@ -45,19 +45,7 @@ displayMeds = do
     putStrLn ""
     putStr "Choice: "
     choice <- getLine
-    case readMaybe choice of
-        Nothing -> return ()
-        Just medNo -> do
-            putStrLn ""
-            medHeader
-            putStr $ show medNo ++ ".  "
-            print $ meds !! (medNo - 1)
-            putStrLn ""
-            
-            systemPause
-
-            return ()
-
+    editMedForm choice meds
 
 
 displayUsers :: IO ()
@@ -115,7 +103,50 @@ sellMedForm = do
             if choice == "Y"
                 then sellMedForm
                 else displayMeds
+
+editMedForm :: String -> [Med] -> IO ()
+editMedForm choice meds= do
+    clearScreen
+    putStrLn "****Edit Medicine****\n"
+    case readMaybe choice of
+        Nothing -> do
+            if choice == ""
+                then return ()
+                else do
+                 putStrLn "\nInvalid choice!!\n"
+                 systemPause
+                 displayMeds
+        Just medNo -> do
+            medHeader
+            putStr $ show medNo ++ ".  "
+            print $ meds !! (medNo - 1)
+            putStrLn ""
+
+            putStr "Name: "
+            medName <- getLine
+            putStr "Amount: "
+            medAmount <- getLine
+            putStr "Price: "
+            medPrice <- getLine
+
+            let newName   = newMedInfo medName (meds !! (medNo - 1)) name
+                newAmount = newMedInfo medAmount (meds !! (medNo - 1)) (show . amount)
+                newPrice  = newMedInfo medPrice (meds !! (medNo - 1)) (show . price)
+                newMed    = snd <$> runParser parseMed (unwords [newName, newAmount, newPrice])
+            case newMed of
+                Nothing -> do
+                    putStrLn "Couldn't create med due to some error\n"
+                    systemPause
+                    displayMeds                
+                Just med -> do
+                    editMed (name (meds !! (medNo - 1))) med
+                    putStrLn "\nUpdated information successfully\n"
+                    systemPause
+                    displayMeds
+                
     
+    where newMedInfo newInfo med f | newInfo == "" =  f med | otherwise = newInfo
+
 
 wrongChoice :: (Maybe User -> IO ()) -> Maybe User -> IO ()
 wrongChoice callBack user = do
