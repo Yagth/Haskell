@@ -43,7 +43,11 @@ displayMeds = do
     medHeader
     mapM_ putStrLn (numberOptions . map (\line -> " " ++ show line) $ meds)
     putStrLn ""
-    systemPause
+    putStr "Choice: "
+    choice <- getLine
+    case choice of
+        ""
+
 
 displayUsers :: IO ()
 displayUsers = do
