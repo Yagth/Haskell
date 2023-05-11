@@ -35,8 +35,7 @@ walk'' :: Maybe Pole
 walk'' = do
     first <- leftBird 1 (0,0)
     second <- rightBird 1 first
-    third <- rightBird 2 second
-    return third
+    rightBird 2 second
 
 type KnightPos = (Int, Int)
 
@@ -65,9 +64,13 @@ toDiffList xs = DiffList (xs++)
 fromDiffList :: DiffList a -> [a]
 fromDiffList (DiffList f) = f []
 
+instance Semigroup (DiffList a) where
+    (<>) :: DiffList a -> DiffList a -> DiffList a
+    (DiffList f) <> (DiffList g) = DiffList (f . g)
+
 instance Monoid (DiffList a) where  
-    mempty = DiffList (\xs -> [] ++ xs)  
-    (DiffList f) `mappend` (DiffList g) = DiffList (\xs -> f (g xs))
+    mempty :: DiffList a
+    mempty = DiffList ([] ++)  
 
 gcd' :: Int -> Int -> Writer (DiffList String) Int  
 gcd' a b  
