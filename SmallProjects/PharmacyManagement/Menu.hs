@@ -5,6 +5,7 @@ import Distribution.Compat.CharParsing (option)
 import Parser (parseMed, runParser, parseUser)
 import CommonIOFuncs
 import CommonFuncs
+import Data.Char (toUpper)
 
 type Options = [String]
 
@@ -45,7 +46,9 @@ displayMeds = do
     putStrLn ""
     putStr "Choice: "
     choice <- getLine
-    editMedForm choice meds
+    case choice of
+        "" -> return ()
+        _  -> editOrDeleteMed choice meds
 
 
 displayUsers :: IO ()
@@ -146,6 +149,56 @@ editMedForm choice meds= do
                 
     
     where newMedInfo newInfo med f | newInfo == "" =  f med | otherwise = newInfo
+
+medDetailOptions :: [String]
+medDetailOptions = ["Edited Selected Medicine", "Delete Selected Medicine"]
+
+editOrDeleteMed :: String -> [Med] -> IO ()
+editOrDeleteMed choice meds = do
+    clearScreen
+    putStrLn "****Med Detail****\n"
+    mapM_ putStrLn (numberOptions medDetailOptions)
+    
+    putStr "\nChoice: "
+    choosenOption <- getLine
+    case choosenOption of
+        "1" -> editMedForm choice meds
+        "2" -> deleteMedForm choice meds
+        _   -> do
+            putStrLn "No such choice\n"
+            putStr "Retry? (N/Y): "
+            retry <- getLine
+            case map toUpper retry of
+                "Y" -> editOrDeleteMed choice meds
+                _   -> displayMeds
+
+deleteMedForm :: String -> [Med] -> IO ()
+deleteMedForm choice meds = do
+    case readMaybe choice of
+        Nothing -> do
+            if choice == ""
+                then return ()
+                else do
+                 putStrLn "\nInvalid choice!!\n"
+                 systemPause
+                 displayMeds
+        Just medNo -> do
+            putStrLn ""
+            putStr $ "Are you sure you want to delete med number " ++ show medNo ++ " (N/Y): "
+            confirm <- getLine
+            if  map toUpper confirm == "Y"
+                then do 
+                    med <- removeMed (meds !! (medNo - 1))
+                    case med of
+                        Nothing -> do 
+                            putStrLn ""
+                            putStrLn "Couldn't delete med due to some error\n"
+                        Just _ -> do
+                            putStrLn ""
+                            putStrLn "Deleted med successfully\n"
+                    systemPause
+                else do return ()
+    displayMeds
 
 
 wrongChoice :: (Maybe User -> IO ()) -> Maybe User -> IO ()
