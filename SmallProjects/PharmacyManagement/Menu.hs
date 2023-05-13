@@ -1,7 +1,6 @@
 module Menu where
 
 import Datatypes
-import Distribution.Compat.CharParsing (option)
 import Parser (parseMed, runParser, parseUser)
 import CommonIOFuncs
 import CommonFuncs
