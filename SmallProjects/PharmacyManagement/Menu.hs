@@ -241,8 +241,8 @@ editOrDeleteMed choice meds = do
     mapM_ putStrLn (numberOptions medDetailOptions)
     
     putStr "\nChoice: "
-    choosenOption <- getLine
-    case choosenOption of
+    chosenOption <- getLine
+    case chosenOption of
         "1" -> editMedForm choice meds
         "2" -> deleteMedForm choice meds
         _   -> do
@@ -254,7 +254,23 @@ editOrDeleteMed choice meds = do
                 _   -> displayMeds
 
 editOrDeleteUser :: String -> [User] -> IO ()
-editOrDeleteUser = undefined
+editOrDeleteUser choice users = do
+    clearScreen
+    putStrLn "****User Detail****\n"
+    mapM_ putStrLn (numberOptions userDetailOptions)
+
+    putStr "\nChoice: "
+    chosenOption <- getLine
+    case chosenOption of
+        "1" -> editUserForm choice users
+        "2" -> fireUserForm choice users
+        _   -> do
+            putStrLn "No such choice\n"
+            putStr "Retry? (N/Y): "
+            retry <- getLine
+            case map toUpper retry of
+                "Y" -> editOrDeleteUser choice users
+                _   -> displayUsers
 
 deleteMedForm :: String -> [Med] -> IO ()
 deleteMedForm choice meds = do
