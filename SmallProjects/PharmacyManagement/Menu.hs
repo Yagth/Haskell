@@ -60,7 +60,11 @@ displayUsers = do
     userHeader
     mapM_ putStrLn (numberOptions . map show $ users)
     putStrLn ""
-    systemPause
+    putStr "Choice: "
+    choice <- getLine
+    case choice of
+        "" -> return ()
+        _  -> editOrDeleteUser choice users
 
 addMedForm :: IO ()
 addMedForm = do
