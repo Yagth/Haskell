@@ -216,7 +216,7 @@ editUserForm choice users = do
             
             case newUser of
                 Nothing -> do
-                    putStrLn "Couldn't create med due to some error\n"
+                    putStrLn "Couldn't update user due to some error\n"
                     systemPause
                     displayUsers                
                 Just user -> do
@@ -228,8 +228,11 @@ editUserForm choice users = do
     
     where newUserInfo newInfo user f | newInfo == "" =  f user | otherwise = newInfo
 
-medDetailOptions :: [String]
-medDetailOptions = ["Edited Selected Medicine", "Delete Selected Medicine"]
+medDetailOptions :: Options
+medDetailOptions = ["Edit Selected Medicine", "Delete Selected Medicine"]
+
+userDetailOptions :: Options 
+userDetailOptions = ["Edit Selected User", "Fire Selected User"]
 
 editOrDeleteMed :: String -> [Med] -> IO ()
 editOrDeleteMed choice meds = do
@@ -249,6 +252,9 @@ editOrDeleteMed choice meds = do
             case map toUpper retry of
                 "Y" -> editOrDeleteMed choice meds
                 _   -> displayMeds
+
+editOrDeleteUser :: String -> [User] -> IO ()
+editOrDeleteUser = undefined
 
 deleteMedForm :: String -> [Med] -> IO ()
 deleteMedForm choice meds = do
@@ -278,6 +284,34 @@ deleteMedForm choice meds = do
                 else do return ()
     displayMeds
 
+
+fireUserForm :: String -> [User] -> IO ()
+fireUserForm choice users = do
+    case readMaybe choice of
+        Nothing -> do
+            if choice == ""
+                then return ()
+                else do
+                    putStrLn "\n Invalid Choice!!\n"
+                    systemPause
+                    displayUsers
+        Just userNo -> do
+            putStrLn ""
+            putStr $ "Are you sure you want to delete user " ++ show userNo ++ "(N/Y): "
+            confirm <- getLine
+            if map toUpper confirm == "Y"
+                then do
+                    user <- removeUser (users !! (userNo - 1))
+                    case user of
+                        Nothing -> do
+                            putStrLn ""
+                            putStrLn "Couldn't fire user due to some error\n"
+                        Just _ -> do
+                            putStrLn ""
+                            putStrLn "Fired user successfully\n"
+                    systemPause
+                else do return ()
+    displayUsers
 
 wrongChoice :: (Maybe User -> IO ()) -> Maybe User -> IO ()
 wrongChoice callBack user = do
