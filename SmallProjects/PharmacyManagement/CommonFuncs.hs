@@ -64,9 +64,9 @@ removeMed med = do
             return (Just med)
         else return Nothing
 
-removeUser :: Med -> IO (Maybe User)
+removeUser :: User -> IO (Maybe User)
 removeUser user = do
-    (Just user) <- getUsers userFile
+    (Just users) <- getUsers userFile
     let newUsers = delete user users
         deleted = users/=newUsers
     if deleted
