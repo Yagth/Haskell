@@ -64,6 +64,18 @@ removeMed med = do
             return (Just med)
         else return Nothing
 
+removeUser :: Med -> IO (Maybe User)
+removeUser user = do
+    (Just user) <- getUsers userFile
+    let newUsers = delete user users
+        deleted = users/=newUsers
+    if deleted
+        then do
+            writeFile (userFile ++ ".tmp") (unlines . map showUser $ newUsers)
+            renameFile (medFile ++ ".tmp") medFile
+            return (Just user)
+        else return Nothing
+
 editMed  :: Name -> Med -> IO (Maybe Med)
 editMed medName newMed = do
     (Just meds) <- getMeds medFile
