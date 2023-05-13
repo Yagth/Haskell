@@ -131,6 +131,15 @@ addMed inputs = do
             appendMedToFile med
          _             -> return Nothing
 
+addUser :: [String] -> IO (Maybe User)
+addUser inputs = do
+    let result = runParser parseUser (unwords inputs)
+
+    case result of
+        Just (_, user) -> do
+            appendUserToFile user
+        _              -> return Nothing
+
 showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]
 
