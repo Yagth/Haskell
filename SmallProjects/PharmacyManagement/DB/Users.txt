@@ -1,3 +1,3 @@
-Yab 1234567890 Yeabesera Derese Admin 300 OnShift
-SO 1234567890 SomeOne Else Normal 400 OffShift
-TP 1234567890 Third Person Normal 500 OnVacation
+Yab 1234567890 Yeabesera Derese Admin 1000.0 NotEmployed
+SO 1234567890 SomeOne Else Normal 100.0 OffShift
+TP 1234567890 Third Person Normal 500.0 OnVacation

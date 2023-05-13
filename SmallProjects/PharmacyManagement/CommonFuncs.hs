@@ -86,18 +86,30 @@ removeMed med = do
             return (Just med)
         else return Nothing
 
-removeUser :: User -> IO (Maybe User)
-removeUser user = do
+fireUser :: User -> IO (Maybe User)
+fireUser user = do
     (Just users) <- getUsers userFile
-    let newUsers = delete user users
-        deleted = users/=newUsers
+    let firedUser = CreateUser 
+            (firstName user) 
+            (lastName user) 
+            (userName user) 
+            (previlage user) 
+            (salary user) 
+            NotEmployed
+        newUsers = findAndReplace user users
+        fired = users/=newUsers
     userPasswords <- findPasswords newUsers
-    if deleted
+    if fired
         then do
             writeFile (userFile ++ ".tmp") (unlines . map showUser $ userPasswords)
             renameFile (medFile ++ ".tmp") medFile
             return (Just user)
         else return Nothing
+    where findAndReplace _ [] = []
+          findAndReplace user (x:xs) = 
+            if userName x == userName user 
+                then user:xs 
+                else x:findAndReplace user xs
 
 editMed  :: Name -> Med -> IO (Maybe Med)
 editMed medName newMed = do
