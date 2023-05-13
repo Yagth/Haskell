@@ -103,8 +103,7 @@ addUserForm = do
     sal  <- getLine
     
     username <- createUserName firstname lastname
-    newUser <- addUser [firstname, lastname, username, prev, sal, show OffShift]
-
+    newUser <- addUser [username, "", firstname, lastname, prev, sal, show OffShift]
     case newUser of
         Just user -> do
             putStrLn "\nNew user with the following info created!!\n"
