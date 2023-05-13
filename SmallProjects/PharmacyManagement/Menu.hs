@@ -216,7 +216,7 @@ editUserForm choice users = do
                 newSalary      = newUserInfo sal (users !! (userNo - 1)) (show . salary)
                 newStatus      = status $ users !! (userNo - 1)
                 username       = userName $ users !! (userNo - 1)
-                newUser         = snd <$> runParser parseUser (unwords [newFirstName, newLastName, username, newPrevilage, newSalary, show newStatus])
+                newUser         = snd <$> runParser parseUser (unwords [username, "", newFirstName, newLastName, newPrevilage, newSalary, show newStatus])
             
             case newUser of
                 Nothing -> do
