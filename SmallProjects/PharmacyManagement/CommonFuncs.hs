@@ -34,6 +34,19 @@ findUsers username = do
         foundUser       = lookup username userLookUpTable
     return foundUser
 
+findPassword :: Username -> IO (Maybe String)
+findPassword username = do
+    strUsers <- readFile userFile
+
+    let result = sequence . dropWhile (Nothing == ) $ map (runParser parsePassword) (lines strUsers)
+
+    case result of
+        Nothing -> return Nothing
+        Just passwords -> 
+            case passwords of
+                [] -> return Nothing
+                (x:xs) -> return $ Just (snd x)
+
 findMeds :: Name -> IO (Maybe Med)
 findMeds medName = do
     (Just meds) <- getMeds medFile
@@ -144,7 +157,7 @@ showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]
 
 showUser :: User -> String
-showUser user = unwords [f user | f <- [firstName, lastName, userName, show . previlage, show . salary, show . status]]
+showUser user = unwords [f user | f <- [userName, take 5 . show, firstName, lastName ,show . previlage, show . salary, show . status]]
 
 createUserName :: String -> String -> IO String
 createUserName firstname lastname =do
@@ -152,7 +165,7 @@ createUserName firstname lastname =do
         username = take len1 firstname ++ take len2 lastname
     
     uniqueUsername username 0
-    
+
     where uniqueUsername username count = do
             user <- findUsers username
             case user of
