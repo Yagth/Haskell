@@ -34,7 +34,7 @@ findUsers username = do
         foundUser       = lookup username userLookUpTable
     return foundUser
 
-findPassword :: Username -> IO (Maybe String)
+findPassword :: Username -> IO (Maybe Password)
 findPassword username = do
     strUsers <- readFile userFile
 
@@ -46,6 +46,14 @@ findPassword username = do
             case passwords of
                 [] -> return Nothing
                 (x:xs) -> return $ Just (snd x)
+
+findPasswords :: [User] -> IO [(User, Password)]
+findPasswords users = do
+    results <- mapM (findPassword . userName) users
+    
+    let Just passwords = sequence results
+        userPasswords  = zip users passwords
+    return userPasswords
 
 findMeds :: Name -> IO (Maybe Med)
 findMeds medName = do
@@ -62,7 +70,8 @@ appendMedToFile med = do
 
 appendUserToFile :: User -> IO (Maybe User)
 appendUserToFile user = do
-    appendFile userFile (showUser user)
+    Just password <- findPassword . userName $ user
+    appendFile userFile (showUser (user, password))
     return (Just user)
 
 removeMed :: Med -> IO (Maybe Med)
@@ -82,9 +91,10 @@ removeUser user = do
     (Just users) <- getUsers userFile
     let newUsers = delete user users
         deleted = users/=newUsers
+    userPasswords <- findPasswords newUsers
     if deleted
         then do
-            writeFile (userFile ++ ".tmp") (unlines . map showUser $ newUsers)
+            writeFile (userFile ++ ".tmp") (unlines . map showUser $ userPasswords)
             renameFile (medFile ++ ".tmp") medFile
             return (Just user)
         else return Nothing
@@ -110,11 +120,12 @@ editMed medName newMed = do
 editUser :: Username -> User -> IO (Maybe User)
 editUser username newUser = do
     (Just users) <- getUsers userFile
-    let (updatedUsers, updated) = replaceUser users
 
+    let (updatedUsers, updated) = replaceUser users
+    userPasswords <- findPasswords updatedUsers
     if updated
         then do
-            writeFile (userFile ++ ".tmp") (unlines . map showUser $ updatedUsers)
+            writeFile (userFile ++ ".tmp") (unlines . map showUser $ userPasswords)
             renameFile (userFile ++ ".tmp") userFile
             return (Just newUser)
         else return Nothing
@@ -156,9 +167,9 @@ addUser inputs = do
 showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]
 
-showUser :: User -> String
-showUser user = unwords [f user | f <- [userName, take 5 . show, firstName, lastName ,show . previlage, show . salary, show . status]]
-
+showUser :: (User, Password) -> String
+showUser (user, password) = unwords [f user | f <- [userName, const password, firstName, lastName ,show . previlage, show . salary, show . status]]
+    
 createUserName :: String -> String -> IO String
 createUserName firstname lastname =do
     let [len1, len2] = map ((`div` 2) . length) [firstname, lastname]
