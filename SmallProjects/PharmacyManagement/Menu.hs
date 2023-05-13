@@ -82,6 +82,24 @@ addMedForm = do
     systemPause
     displayMeds
 
+addUserForm :: IO ()
+addUserForm = do
+    clearScreen
+    putStrLn "****Add new User****\n"
+    putStr "Firstname: "
+    firstname <- getLine
+    putStr "Lastname: "
+    lastname <- getLine
+    putStr "Previlage(Admin/Normal): "
+    prev <- getLine
+    putStr "Salary: "
+    sal  <- getLine
+    let username = undefined
+    newUser <- addUser []
+
+    return ()
+
+
 sellMedForm :: IO ()
 sellMedForm = do
     clearScreen

@@ -143,9 +143,21 @@ addUser inputs = do
 showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]
 
-
 showUser :: User -> String
 showUser user = unwords [f user | f <- [firstName, lastName, userName, show . previlage, show . salary, show . status]]
+
+createUserName :: String -> String -> IO String
+createUserName firstname lastname =do
+    let [len1, len2] = map ((`div` 2) . length) [firstname, lastname]
+        username = take len1 firstname ++ take len2 lastname
+    
+    uniqueUsername username 0
+    
+    where uniqueUsername username count = do
+            user <- findUsers username
+            case user of
+                Nothing -> return username
+                _       -> uniqueUsername (username ++ show count) (count + 1)
 
 fmapT :: (a -> a) -> (a, b) -> (a, b)
 fmapT f (x,y) = (f x, y)
