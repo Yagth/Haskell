@@ -202,6 +202,6 @@ deleteMedForm choice meds = do
 
 wrongChoice :: (Maybe User -> IO ()) -> Maybe User -> IO ()
 wrongChoice callBack user = do
-    putStrLn "\nNo Such Choice"
+    putStrLn "\nNo Such Option"
     systemPause
     callBack user
