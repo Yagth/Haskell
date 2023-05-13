@@ -10,7 +10,7 @@ type Options = [String]
 
 
 adminOptions :: Options
-adminOptions = ["List All Medicines","List All Users","Logout"]
+adminOptions = ["List All Medicines","Add User", "List All Users","Logout"]
 
 allMedsOptions :: Options
 allMedsOptions = ["List Meds", "Remove Meds", "Edit Meds"]
@@ -110,11 +110,11 @@ addUserForm = do
             putStrLn "\nNew user with the following info created!!\n"
             userHeader
             putStrLn ("1. " ++ show user)
+            systemPause
+            displayUsers
         Nothing   -> do
             putStrLn "Couldn't create User due to some error\n"
-
-    systemPause
-    displayUsers
+            systemPause
 
 sellMedForm :: IO ()
 sellMedForm = do

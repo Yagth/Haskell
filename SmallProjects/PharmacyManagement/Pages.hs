@@ -45,8 +45,9 @@ adminFuncs = [
     ("1", sellMedForm),
     ("2", addMedForm),
     ("3", displayMeds),
-    ("4", displayUsers),
-    ("5", logout)
+    ("4", addUserForm),
+    ("5", displayUsers),
+    ("6", logout)
     ]
 
 adminPage :: Maybe User -> IO ()
