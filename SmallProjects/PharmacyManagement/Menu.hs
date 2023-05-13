@@ -321,7 +321,7 @@ fireUserForm choice users = do
             confirm <- getLine
             if map toUpper confirm == "Y"
                 then do
-                    user <- removeUser (users !! (userNo - 1))
+                    user <- fireUser (users !! (userNo - 1))
                     case user of
                         Nothing -> do
                             putStrLn ""
