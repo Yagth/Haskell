@@ -47,6 +47,11 @@ appendMedToFile med = do
     appendFile medFile (showMed med)
     return (Just med)
 
+appendUserToFile :: User -> IO (Maybe User)
+appendUserToFile user = do
+    appendFile userFile (showUser med)
+    return (Just user)
+
 removeMed :: Med -> IO (Maybe Med)
 removeMed med = do
     (Just meds) <- getMeds medFile
@@ -99,6 +104,9 @@ addMed inputs = do
 showMed :: Med -> String
 showMed med = unwords [f med | f <- [name, show . amount, show . price]]
 
+
+showUser :: User -> String
+showUser user = unwords [f user | f <- [firstName, lastName, userName, show . previlage, show . salary, show . status]]
 
 fmapT :: (a -> a) -> (a, b) -> (a, b)
 fmapT f (x,y) = (f x, y)
