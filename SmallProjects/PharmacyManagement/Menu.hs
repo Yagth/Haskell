@@ -94,11 +94,19 @@ addUserForm = do
     prev <- getLine
     putStr "Salary: "
     sal  <- getLine
-    let username = undefined
-    newUser <- addUser []
+    
+    username <- createUserName firstname lastname
+    newUser <- addUser [firstname, lastname, username, prev, sal, show OffShift]
 
-    return ()
+    case newUser of
+        Just user -> do
+            putStrLn "\nNew user with the following info created!!\n"
+            putStrLn ("1. " ++ show user)
+        Nothing   -> do
+            putStrLn "Couldn't create User due to some error\n"
 
+    systemPause
+    displayUsers
 
 sellMedForm :: IO ()
 sellMedForm = do
