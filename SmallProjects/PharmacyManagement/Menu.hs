@@ -179,6 +179,55 @@ editMedForm choice meds= do
     
     where newMedInfo newInfo med f | newInfo == "" =  f med | otherwise = newInfo
 
+editUserForm :: String -> [User] -> IO ()
+editUserForm choice users = do
+    clearScreen
+    putStrLn "****Edit User****\n"
+    case readMaybe choice of
+        Nothing -> do
+            if choice == ""
+                then return ()
+                else do
+                 putStrLn "\nInvalid choice!!\n"
+                 systemPause
+                 displayUsers
+        Just userNo -> do
+            userHeader
+            putStr $ show userNo ++ ".  "
+            print $ users !! (userNo - 1)
+            putStrLn ""
+
+            putStr "Firstname: "
+            firstname <- getLine
+            putStr "Lastname: "
+            lastname <- getLine
+            putStr "Previlage(Admin/Normal): "
+            prev <- getLine
+            putStr "Salary: "
+            sal  <- getLine
+
+            let newFirstName   = newUserInfo firstname (users !! (userNo - 1)) firstName
+                newLastName    = newUserInfo lastname (users !! (userNo - 1)) lastName
+                newPrevilage   = newUserInfo prev (users !! (userNo - 1)) (show . previlage)
+                newSalary      = newUserInfo prev (users !! (userNo - 1)) (show . salary)
+                newStatus      = newUserInfo prev (users !! (userNo - 1)) (show . status)
+                username       = userName $ users !! (userNo - 1)
+                newUser         = snd <$> runParser parseUser (unwords [newFirstName, newLastName, username, newPrevilage, newSalary, newStatus])
+            
+            case newUser of
+                Nothing -> do
+                    putStrLn "Couldn't create med due to some error\n"
+                    systemPause
+                    displayUsers                
+                Just user -> do
+                    editUser (userName (users !! (userNo - 1))) user
+                    putStrLn "\nUpdated information successfully\n"
+                    systemPause
+                    displayUsers
+                
+    
+    where newUserInfo newInfo user f | newInfo == "" =  f user | otherwise = newInfo
+
 medDetailOptions :: [String]
 medDetailOptions = ["Edited Selected Medicine", "Delete Selected Medicine"]
 
