@@ -94,6 +94,24 @@ editMed medName newMed = do
             else let (newS, bool) = replaceMed xs 
                  in (x:newS, bool)
 
+editUser :: Username -> User -> IO (Maybe User)
+editUser username newUser = do
+    (Just users) <- getUsers userFile
+    let (updatedUsers, updated) = replaceUser users
+
+    if updated
+        then do
+            writeFile (userFile ++ ".tmp") (unlines . map showUser $ updatedUsers)
+            renameFile (userFile ++ ".tmp") userFile
+            return (Just newUser)
+        else return Nothing
+
+    where replaceUser [] = ([], False)
+          replaceUser (x:xs) = if userName x == username
+            then (newUser:xs, True)
+            else let (newList, bool) = replaceUser xs
+                 in (x:newList, bool)
+
 sellMed :: Name -> Int -> IO (Maybe Med)
 sellMed medName amount' = do
     med <- findMeds medName
