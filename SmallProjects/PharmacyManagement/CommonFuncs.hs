@@ -49,7 +49,7 @@ appendMedToFile med = do
 
 appendUserToFile :: User -> IO (Maybe User)
 appendUserToFile user = do
-    appendFile userFile (showUser med)
+    appendFile userFile (showUser user)
     return (Just user)
 
 removeMed :: Med -> IO (Maybe Med)
