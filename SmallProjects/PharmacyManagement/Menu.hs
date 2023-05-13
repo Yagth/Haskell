@@ -34,6 +34,8 @@ displayMenu options = do
 medHeader :: IO ()
 medHeader = putStrLn "No. Name\tAmount\tPrice\n"
 
+userHeader :: IO ()
+userHeader = putStrLn "No. Firstname\tLastname\tPrev\tSalary\tStatus\n"
 
 displayMeds :: IO ()
 displayMeds = do
@@ -55,6 +57,7 @@ displayUsers = do
     clearScreen
     Just users <- getUsers userFile
     putStrLn "****List of all Users****\n"
+    userHeader
     mapM_ putStrLn (numberOptions . map show $ users)
     putStrLn ""
     systemPause
@@ -101,6 +104,7 @@ addUserForm = do
     case newUser of
         Just user -> do
             putStrLn "\nNew user with the following info created!!\n"
+            userHeader
             putStrLn ("1. " ++ show user)
         Nothing   -> do
             putStrLn "Couldn't create User due to some error\n"
