@@ -35,7 +35,7 @@ medHeader :: IO ()
 medHeader = putStrLn "No. Name\tAmount\tPrice\n"
 
 userHeader :: IO ()
-userHeader = putStrLn "No. Firstname\tLastname\tPrev\tSalary\tStatus\n"
+userHeader = putStrLn "No. FirstN\tLastN\tPrev\tSalary\tStatus\n"
 
 displayMeds :: IO ()
 displayMeds = do
@@ -213,10 +213,10 @@ editUserForm choice users = do
             let newFirstName   = newUserInfo firstname (users !! (userNo - 1)) firstName
                 newLastName    = newUserInfo lastname (users !! (userNo - 1)) lastName
                 newPrevilage   = newUserInfo prev (users !! (userNo - 1)) (show . previlage)
-                newSalary      = newUserInfo prev (users !! (userNo - 1)) (show . salary)
-                newStatus      = newUserInfo prev (users !! (userNo - 1)) (show . status)
+                newSalary      = newUserInfo sal (users !! (userNo - 1)) (show . salary)
+                newStatus      = status $ users !! (userNo - 1)
                 username       = userName $ users !! (userNo - 1)
-                newUser         = snd <$> runParser parseUser (unwords [newFirstName, newLastName, username, newPrevilage, newSalary, newStatus])
+                newUser         = snd <$> runParser parseUser (unwords [newFirstName, newLastName, username, newPrevilage, newSalary, show newStatus])
             
             case newUser of
                 Nothing -> do
